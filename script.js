@@ -1,38 +1,43 @@
-const socket = io();
+// Client-side JavaScript
 
-// Function to display chat messages
-function displayMessage(message) {
-  const messageContainer = document.getElementById('message-container');
-  const messageElement = document.createElement('div');
-  messageElement.innerText = message;
-  messageContainer.appendChild(messageElement);
-  messageContainer.scrollTop = messageContainer.scrollHeight;
-}
+document.getElementById("messageForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const messageInput = document.getElementById("messageInput");
+    const message = messageInput.value;
+    messageInput.value = "";
 
-// Function to handle sending a message
-function sendMessage() {
-  const messageInput = document.getElementById('message-input');
-  const message = messageInput.value;
-
-  if (message) {
-    socket.emit('chat-message', message);
-    messageInput.value = '';
-  }
-}
-
-// Display received messages
-socket.on('chat-message', (message) => {
-  displayMessage(`Other User: ${message}`);
+    // Send the message to the server
+    fetch("/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+    });
 });
 
-// Event listener for sending a message
-const sendButton = document.getElementById('send-button');
-sendButton.addEventListener('click', sendMessage);
+// Function to append a new message to the list
+function appendMessage(message) {
+    const messagesList = document.getElementById("messagesList");
+    const li = document.createElement("li");
+    li.textContent = message;
+    messagesList.appendChild(li);
+}
 
-// Event listener for Enter key press in the message input
-const messageInput = document.getElementById('message-input');
-messageInput.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
-    sendMessage();
-  }
-});
+// Function to retrieve messages from the server
+function getMessages() {
+    fetch("/messages")
+        .then((response) => response.json())
+        .then((data) => {
+            const messages = data.messages;
+            const messagesList = document.getElementById("messagesList");
+            messagesList.innerHTML = ""; // Clear the list
+
+            messages.forEach((message) => {
+                appendMessage(message);
+            });
+        });
+}
+
+// Fetch messages every 2 seconds
+setInterval(getMessages, 2000);
