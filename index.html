@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Two-Way Chat</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Two-Way Messaging</title>
 </head>
 <body>
-  <div id="chat-container">
-    <div id="message-container"></div>
-    <div id="input-container">
-      <input type="text" id="message-input" placeholder="Type your message...">
-      <button id="send-button">Send</button>
-    </div>
-  </div>
+    <h1>Two-Way Messaging</h1>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <script src="script.js"></script>
+    <form id="messageForm">
+        <input type="text" id="messageInput" placeholder="Enter your message" />
+        <button type="submit">Send</button>
+    </form>
+
+    <div id="messagesContainer">
+        <h2>Received Messages:</h2>
+        <ul id="messagesList"></ul>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
