@@ -1,27 +1,25 @@
-// Server-side JavaScript using Node.js and Express
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 
-const express = require("express");
 const app = express();
-const PORT = 3000;
+const server = http.createServer(app);
+const io = socketIo(server);
 
-app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(__dirname));
 
-let messages = [];
+io.on('connection', (socket) => {
+    console.log('A user connected');
 
-// Endpoint to handle receiving and storing messages
-app.post("/messages", (req, res) => {
-    const message = req.body.message;
-    messages.push(message);
-    console.log("Received message:", message);
-    res.sendStatus(200);
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+    });
+
+    socket.on('chat message', (message) => {
+        io.emit('chat message', message); // Broadcast the message to all connected clients
+    });
 });
 
-// Endpoint to retrieve messages
-app.get("/messages", (req, res) => {
-    res.json({ messages });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+server.listen(3000, () => {
+    console.log('Server listening on http://localhost:3000');
 });
